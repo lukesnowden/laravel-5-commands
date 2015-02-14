@@ -51,3 +51,9 @@ foreach model created to will have to register the interface binding in the appl
 		);
 	}
 ```
+
+you can also pass a fields option to populate the migration and rules
+
+```cli
+artisan lukesnowden:model post --fields="name,category_id,slug,order"
+```
