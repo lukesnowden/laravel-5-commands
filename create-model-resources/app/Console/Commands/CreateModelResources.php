@@ -90,11 +90,7 @@ class CreateModelResources extends Command {
 			$viewsFolder = $controllersFolder . '../../../views/';
 		}
 
-		$controllersFolder = $this->createIfDoesntExist( $controllersFolder );
-		$interfacesFolder = $this->createIfDoesntExist( $controllersFolder . '../Interfaces/' );
-		$repositoriesFolder = $this->createIfDoesntExist( $controllersFolder . '../Repositories/' );
-		$modelsFolder = $this->createIfDoesntExist( $controllersFolder . '../Models/' );
-
+		$this->createFolders( $controllersFolder );
 		$this->createController( $controllersFolder, $controllerName, $interfaceName, $namespace );
 		$this->createAbstractRepository( $repositoriesFolder, $namespace );
 		$this->createInterface( $interfacesFolder, $interfaceName, $namespace );
@@ -102,7 +98,35 @@ class CreateModelResources extends Command {
 		$this->createModel( $modelsFolder, $modelName, $tableName, $namespace );
 		$this->createMigration( $migrationName, $tableName, $fields );
 		$this->createViews( $name, $viewsFolder );
+		$this->displayRouteSuggesstions( $tableName, $controllerName, $namespace );
 
+		if ( $this->confirm( 'Do you want to create a new one with the same arguments? [yes|no]' ) ) {
+		    $name = $this->ask('What is the name? (i.e user)');
+		    $options['fields'] = $this->ask('Fields? (blank for no fields):');
+		    $this->build( $options, $name );
+		}
+	}
+
+	/**
+	 * [createFolders description]
+	 * @param  [type] $constrollersFolder [description]
+	 * @return [type]                     [description]
+	 */
+	private function createFolders( $controllersFolder ) {
+		$controllersFolder = $this->createIfDoesntExist( $controllersFolder );
+		$interfacesFolder = $this->createIfDoesntExist( $controllersFolder . '../Interfaces/' );
+		$repositoriesFolder = $this->createIfDoesntExist( $controllersFolder . '../Repositories/' );
+		$modelsFolder = $this->createIfDoesntExist( $controllersFolder . '../Models/' );
+	}
+
+	/**
+	 * [displayRouteSuggesstions description]
+	 * @param  [type] $tableName      [description]
+	 * @param  [type] $controllerName [description]
+	 * @param  [type] $namespace      [description]
+	 * @return [type]                 [description]
+	 */
+	private function displayRouteSuggesstions( $tableName, $controllerName, $namespace ) {
 		$this->info("\nRoute suggestion:");
 		$this->comment("
 Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controllers'], function() {
@@ -114,11 +138,6 @@ Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controll
 	Route::post('/add', 			['as' => '{$tableName}.add.process', 	'uses' => '{$controllerName}@processAdd' ]);
 });\n
 ");
-		if ( $this->confirm( 'Do you want to create a new one with the same arguments? [yes|no]' ) ) {
-		    $name = $this->ask('What is the name? (i.e user)');
-		    $options['fields'] = $this->ask('Fields? (blank for no fields):');
-		    $this->build( $options, $name );
-		}
 	}
 
 	/**
