@@ -45,7 +45,7 @@ class {%CONTROLLER%} extends Controller {
 			Redirect::back()->withInput()->withErrors( $errors );
 		}
 		$this->repository->update( $model->id, $request->all() );
-		$this->respository->success('Successfully update!');
+		$this->repository->success('Successfully update!');
 		return Redirect::back();
 	}
 
@@ -66,7 +66,7 @@ class {%CONTROLLER%} extends Controller {
 			Redirect::back()->withInput()->withErrors( $errors );
 		}
 		$item = $this->repository->create( $request->all() );
-		$this->respository->success('Successfully created!');
+		$this->repository->success('Successfully created!');
 		return Redirect::back();
 	}
 
@@ -77,7 +77,7 @@ class {%CONTROLLER%} extends Controller {
 	 */
 	public function delete($id) {
 		$this->repository->find($id)->delete();
-		$this->respository->success('Successfully deleted!');
+		$this->repository->success('Successfully deleted!');
 		return Redirect::back();
 	}
 
