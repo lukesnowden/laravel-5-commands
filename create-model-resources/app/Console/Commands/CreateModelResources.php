@@ -64,12 +64,14 @@ class CreateModelResources extends Command {
 		if( ! isset( $options['controller-path'] ) ) {
 			$controllersFolder = app_path('Http/Controllers/');
 			$namespace = 'App\Http';
+			$viewsFolder = base_path('resources/views/');
 		} else if( ! isset( $options['namespace'] ) ) {
 			$this->error('You must declare a namespace if changing the path i.e. --namespace="My\New\Namespace"');
 			die();
 		} else {
 			$controllersFolder = base_path( rtrim( $options['controller-path'], '/' ) . '/' );
 			$namespace = $options['namespace'];
+			$viewsFolder = $controllersFolder . '../../../views/';
 		}
 
 		$controllersFolder = $this->createIfDoesntExist( $controllersFolder );
@@ -83,8 +85,9 @@ class CreateModelResources extends Command {
 		$this->createRepository( $repositoriesFolder, $repositoryName, $interfaceName, $modelName, $namespace );
 		$this->createModel( $modelsFolder, $modelName, $tableName, $namespace );
 		$this->createMigration( $migrationName, $tableName );
+		$this->createViews( $name, $viewsFolder );
 
-		$this->info("\nRoute sugesstion:");
+		$this->info("\nRoute suggestion:");
 		$this->comment("
 Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controllers'], function() {
 	Route::get( '/', 			['as' => '{$tableName}', 			'uses' => '{$controllerName}@lists' ]);
@@ -95,11 +98,23 @@ Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controll
 	Route::post('/add', 			['as' => '{$tableName}.add.process', 	'uses' => '{$controllerName}@processAdd' ]);
 });\n
 ");
-
-
 		if ( $this->confirm( 'Do you want to create a new one with the same arguments? [yes|no]' ) ) {
 		    $name = $this->ask('What is the name? (i.e user)');
 		    $this->build( $options, $name );
+		}
+	}
+
+	/**
+	 * [createViews description]
+	 * @param  [type] $name   [description]
+	 * @param  [type] $folder [description]
+	 * @return [type]         [description]
+	 */
+	private function createViews( $name, $folder ) {
+		$views = array('lists','add','edit');
+		$path = $this->createIfDoesntExist( $folder . $name . '/' );
+		foreach( $views as $view ) {
+			$this->createIfDoesntExist( "{$path}{$view}.blade.php", true );
 		}
 	}
 
