@@ -3,6 +3,21 @@
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Illuminate\Console\AppNamespaceDetectorTrait;
+
+class tempTrait {
+
+	use AppNamespaceDetectorTrait;
+
+	/**
+	 * [appNamespace description]
+	 * @return [type] [description]
+	 */
+	public function appNamespace() {
+		return $this->getAppNamespace();
+	}
+
+}
 
 class CreateModelResources extends Command {
 
@@ -63,11 +78,11 @@ class CreateModelResources extends Command {
 
 		if( ! isset( $options['controller-path'] ) ) {
 			$controllersFolder = app_path('Http/Controllers/');
-			$namespace = 'App\Http';
+			$tempTrait = new tempTrait();
+			$namespace = $tempTrait->appNamespace() . 'Http';
 			$viewsFolder = base_path('resources/views/');
 		} else if( ! isset( $options['namespace'] ) ) {
-			$this->error('You must declare a namespace if changing the path i.e. --namespace="My\New\Namespace"');
-			die();
+			die( $this->error('You must declare a namespace if changing the path i.e. --namespace="My\New\Namespace"') );
 		} else {
 			$controllersFolder = base_path( rtrim( $options['controller-path'], '/' ) . '/' );
 			$namespace = $options['namespace'];
