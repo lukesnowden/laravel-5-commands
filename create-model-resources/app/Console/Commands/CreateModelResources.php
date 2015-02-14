@@ -90,7 +90,12 @@ class CreateModelResources extends Command {
 			$viewsFolder = $controllersFolder . '../../../views/';
 		}
 
-		$this->createFolders( $controllersFolder );
+		// Create Folders
+		$controllersFolder = $this->createIfDoesntExist( $controllersFolder );
+		$interfacesFolder = $this->createIfDoesntExist( $controllersFolder . '../Interfaces/' );
+		$repositoriesFolder = $this->createIfDoesntExist( $controllersFolder . '../Repositories/' );
+		$modelsFolder = $this->createIfDoesntExist( $controllersFolder . '../Models/' );
+		// Create Resources
 		$this->createController( $controllersFolder, $controllerName, $interfaceName, $namespace );
 		$this->createAbstractRepository( $repositoriesFolder, $namespace );
 		$this->createInterface( $interfacesFolder, $interfaceName, $namespace );
@@ -105,18 +110,6 @@ class CreateModelResources extends Command {
 		    $options['fields'] = $this->ask('Fields? (blank for no fields):');
 		    $this->build( $options, $name );
 		}
-	}
-
-	/**
-	 * [createFolders description]
-	 * @param  [type] $constrollersFolder [description]
-	 * @return [type]                     [description]
-	 */
-	private function createFolders( $controllersFolder ) {
-		$controllersFolder = $this->createIfDoesntExist( $controllersFolder );
-		$interfacesFolder = $this->createIfDoesntExist( $controllersFolder . '../Interfaces/' );
-		$repositoriesFolder = $this->createIfDoesntExist( $controllersFolder . '../Repositories/' );
-		$modelsFolder = $this->createIfDoesntExist( $controllersFolder . '../Models/' );
 	}
 
 	/**
