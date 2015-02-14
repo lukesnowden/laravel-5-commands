@@ -1,7 +1,7 @@
 
 #Create Model Resources
 
-Create a model along with migration, controller, interface and repository.
+Create a model along with migration, controller, interface, repository and views.
 
 Add the reference to the commands kernel.
 /app/Console/Kernel.php
@@ -33,4 +33,10 @@ will generate the following
 -database
 	-migrations
 		0000_00_00_000000_create_posts_table.php
+-resources
+	-views
+		-Post
+			add.blade.php
+			edit.blade.php
+			list.blade.php
 ```
