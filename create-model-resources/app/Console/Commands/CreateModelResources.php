@@ -75,6 +75,7 @@ class CreateModelResources extends Command {
 		$migrationName = "Create" . str_plural( $name ) . "Table";
 		$tableName = str_plural( strtolower( $name ) );
 		$modelName = $name;
+		$fields = array_filter( explode( ',', $options['fields'] ?: '' ) );
 
 		if( ! isset( $options['controller-path'] ) ) {
 			$controllersFolder = app_path('Http/Controllers/');
@@ -97,9 +98,9 @@ class CreateModelResources extends Command {
 		$this->createController( $controllersFolder, $controllerName, $interfaceName, $namespace );
 		$this->createAbstractRepository( $repositoriesFolder, $namespace );
 		$this->createInterface( $interfacesFolder, $interfaceName, $namespace );
-		$this->createRepository( $repositoriesFolder, $repositoryName, $interfaceName, $modelName, $namespace );
+		$this->createRepository( $repositoriesFolder, $repositoryName, $interfaceName, $modelName, $namespace, $fields );
 		$this->createModel( $modelsFolder, $modelName, $tableName, $namespace );
-		$this->createMigration( $migrationName, $tableName );
+		$this->createMigration( $migrationName, $tableName, $fields );
 		$this->createViews( $name, $viewsFolder );
 
 		$this->info("\nRoute suggestion:");
@@ -115,6 +116,7 @@ Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controll
 ");
 		if ( $this->confirm( 'Do you want to create a new one with the same arguments? [yes|no]' ) ) {
 		    $name = $this->ask('What is the name? (i.e user)');
+		    $options['fields'] = $this->ask('Fields? (blank for no fields):');
 		    $this->build( $options, $name );
 		}
 	}
@@ -139,17 +141,26 @@ Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controll
 	 * @param  [type] $tableName [description]
 	 * @return [type]            [description]
 	 */
-	private function createMigration( $migrationName, $tableName ) {
+	private function createMigration( $migrationName, $tableName, $fields ) {
 		$folder = base_path('database/migrations/');
 		$name = str_slug( date( "Y m d His" ), '_' ) . "_create_{$tableName}_table.php";
 		$migration = $this->createIfDoesntExist( $folder . $name, true );
 		$contents = file_get_contents( $this->templatesPath . 'migration.php.txt' );
+
+		$_fields = '';
+		foreach( $fields as $field ) {
+			if( $field == '' ) continue;
+			$_fields .= "\t\t\t" . '$table->string(\'' . $field . '\');' . "\n";
+		}
+
 		$contents = str_replace( array(
 			'{%TABLENAME%}',
-			'{%MIGRATION%}'
+			'{%MIGRATION%}',
+			'{%FIELDS%}'
 		), array(
 			$tableName,
-			$migrationName
+			$migrationName,
+			ltrim( $_fields )
 		), $contents );
 		file_put_contents( $migration, $contents );
 	}
@@ -207,19 +218,28 @@ Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controll
 	 * @param  [type] $namespace      [description]
 	 * @return [type]                 [description]
 	 */
-	private function createRepository( $folder, $repositoryName, $interfaceName, $modelName, $namespace ) {
+	private function createRepository( $folder, $repositoryName, $interfaceName, $modelName, $namespace,  $fields ) {
 		$repository = $this->createIfDoesntExist( $folder . "{$repositoryName}.php", true );
 		$contents = file_get_contents( $this->templatesPath . 'repository.php.txt' );
+
+		$rules = '';
+		foreach( $fields as $field ) {
+			if( $field == '' ) continue;
+			$rules .= "\n\t\t'{$field}' => 'required',";
+		}
+
 		$contents = str_replace( array(
 			'{%NAMESPACE%}',
 			'{%REPOSITORY%}',
 			'{%INTERFACE%}',
-			'{%MODEL%}'
+			'{%MODEL%}',
+			'{%RULES%}'
 		), array(
 			$namespace,
 			$repositoryName,
 			$interfaceName,
-			$modelName
+			$modelName,
+			rtrim( $rules ) . "\n\t"
 		), $contents );
 		file_put_contents( $repository, $contents );
 	}
@@ -292,7 +312,8 @@ Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controll
 	{
 		return [
 			['controller-path', null, InputOption::VALUE_OPTIONAL, 'The path to your controllers folder', null],
-			['namespace', null, InputOption::VALUE_OPTIONAL, 'Namespace if Controller Path is defined', null]
+			['namespace', null, InputOption::VALUE_OPTIONAL, 'Namespace if Controller Path is defined', null],
+			['fields', null, InputOption::VALUE_OPTIONAL, 'Addes the fields to the migration (default string) and rules array', null]
 		];
 	}
 

@@ -9,13 +9,13 @@ class {%REPOSITORY%} extends Repository implements {%INTERFACE%} {
 	 * [$viewPath description]
 	 * @var string
 	 */
-	protected $viewPath = '';
+	protected $viewPath = '{%MODEL%}.';
 
 	/**
 	 * [$rules description]
 	 * @var array
 	 */
-	protected $rules = array();
+	protected $rules = array({%RULES%});
 
 	/**
 	 * [__construct description]

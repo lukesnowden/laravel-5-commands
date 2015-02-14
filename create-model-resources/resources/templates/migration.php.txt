@@ -16,6 +16,7 @@ class {%MIGRATION%} extends Migration {
 		{
 			$table->increments('id');
 			$table->timestamps();
+			{%FIELDS%}
 		});
 	}
 
