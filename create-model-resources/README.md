@@ -40,3 +40,14 @@ will generate the following
 			edit.blade.php
 			list.blade.php
 ```
+
+foreach model created to will have to register the interface binding in the applications/packages service provider
+
+```php
+	public function register()
+	{
+		$this->app->bind(
+			'App\Http\Interfaces\PostInterface.php','App\Http\Repositories\PostRepository.php'
+		);
+	}
+```
