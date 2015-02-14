@@ -1,6 +1,6 @@
 <?php namespace {%NAMESPACE%}\Controllers;
 
-use {%NAMESPACE%}\Controllers\Controller;
+use App\Http\Controllers\Controller;
 use {%NAMESPACE%}\Interfaces\{%INTERFACE%};
 use Input, Session, Redirect;
 
@@ -18,7 +18,7 @@ class {%CONTROLLER%} extends Controller {
 	 * [list description]
 	 * @return [type] [description]
 	 */
-	public function list() {
+	public function lists() {
 		$list = $this->repository->paginate(20);
 	}
 
@@ -42,6 +42,7 @@ class {%CONTROLLER%} extends Controller {
 			Redirect::back()->withInput()->withErrors( $errors );
 		}
 		$this->repository->update( $model->id, Input::all() );
+		$this->respository->success('Successfully update!');
 		return Redirect::back();
 	}
 
@@ -62,6 +63,18 @@ class {%CONTROLLER%} extends Controller {
 			Redirect::back()->withInput()->withErrors( $errors );
 		}
 		$item = $this->repository->create( Input::all() );
+		$this->respository->success('Successfully created!');
+		return Redirect::back();
+	}
+
+	/**
+	 * [delete description]
+	 * @param  [type] $id [description]
+	 * @return [type]     [description]
+	 */
+	public function delete($id) {
+		$this->repository->find($id)->delete();
+		$this->respository->success('Successfully deleted!');
 		return Redirect::back();
 	}
 

@@ -84,7 +84,19 @@ class CreateModelResources extends Command {
 		$this->createModel( $modelsFolder, $modelName, $tableName, $namespace );
 		$this->createMigration( $migrationName, $tableName );
 
-		$this->info('Created Successfully!');
+		$this->info("\nRoute sugesstion:");
+		$this->comment("
+Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controllers'], function() {
+	Route::get( '/', 			['as' => '{$tableName}', 			'uses' => '{$controllerName}@lists' ]);
+	Route::get( '/add', 			['as' => '{$tableName}.add', 		'uses' => '{$controllerName}@showAdd' ]);
+	Route::get( '/edit/{ID}', 		['as' => '{$tableName}.edit', 		'uses' => '{$controllerName}@showEdit' ]);
+	Route::get( '/delete/{ID}', 		['as' => '{$tableName}.delete', 		'uses' => '{$controllerName}@delete' ]);
+	Route::post('/edit/{ID}', 		['as' => '{$tableName}.edit.process', 	'uses' => '{$controllerName}@processEdit' ]);
+	Route::post('/add', 			['as' => '{$tableName}.add.process', 	'uses' => '{$controllerName}@processAdd' ]);
+});\n
+");
+
+
 		if ( $this->confirm( 'Do you want to create a new one with the same arguments? [yes|no]' ) ) {
 		    $name = $this->ask('What is the name? (i.e user)');
 		    $this->build( $options, $name );

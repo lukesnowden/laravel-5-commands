@@ -3,6 +3,7 @@
 use Illuminate\Database\Eloquent\Model;
 use Validator;
 use View;
+use Session;
 
 abstract class Repository
 {
@@ -101,6 +102,16 @@ abstract class Repository
      */
     public function paginate( $amount = 10 ) {
         return $this->model->paginate( $amount );
+    }
+
+    /**
+     * [success description]
+     * @param  [type]  $message [description]
+     * @param  boolean $type    [description]
+     * @return [type]           [description]
+     */
+    public function success( $message, $type = false ) {
+        Session::flash( 'success' . ( $type ? "_{$type}" : '' ), $message );
     }
 
 }
