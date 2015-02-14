@@ -1,0 +1,28 @@
+<?php namespace {%NAMESPACE%}\Repositories;
+
+use {%NAMESPACE%}\Interfaces\{%INTERFACE%};
+use {%NAMESPACE%}\Models\{%MODEL%};
+
+class {%REPOSITORY%} extends Repository implements {%INTERFACE%} {
+
+	/**
+	 * [$viewPath description]
+	 * @var string
+	 */
+	protected $viewPath = '';
+
+	/**
+	 * [$rules description]
+	 * @var array
+	 */
+	protected $rules = array();
+
+	/**
+	 * [__construct description]
+	 * @param [type] $model [description]
+	 */
+	public function __construct( {%MODEL%} $model ) {
+		$this->model = $model;
+	}
+
+}

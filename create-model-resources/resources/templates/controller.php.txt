@@ -1,0 +1,16 @@
+<?php namespace {%NAMESPACE%}\Controllers;
+
+use {%NAMESPACE%}\Controllers\Controller;
+use {%NAMESPACE%}\Interfaces\{%INTERFACE%};
+
+class {%CONTROLLER%} extends Controller {
+
+	/**
+	 * [__construct description]
+	 * @param [type] $repository [description]
+	 */
+	public function __construct( {%INTERFACE%} $repository ) {
+		$this->repository = $repository;
+	}
+
+}

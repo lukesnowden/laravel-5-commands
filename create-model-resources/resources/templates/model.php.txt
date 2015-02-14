@@ -1,0 +1,19 @@
+<?php namespace {%NAMESPACE%}\Models;
+
+use Eloquent;
+
+class {%MODEL%} extends Eloquent {
+
+	/**
+	 * [$table description]
+	 * @var string
+	 */
+	protected $table = '{%TABLENAME%}';
+
+	/**
+	 * [$guarded description]
+	 * @var array
+	 */
+	protected $guarded = array( 'id' );
+
+}
