@@ -2,6 +2,7 @@
 
 use {%NAMESPACE%}\Controllers\Controller;
 use {%NAMESPACE%}\Interfaces\{%INTERFACE%};
+use Input, Session, Redirect;
 
 class {%CONTROLLER%} extends Controller {
 
@@ -11,6 +12,57 @@ class {%CONTROLLER%} extends Controller {
 	 */
 	public function __construct( {%INTERFACE%} $repository ) {
 		$this->repository = $repository;
+	}
+
+	/**
+	 * [list description]
+	 * @return [type] [description]
+	 */
+	public function list() {
+		$list = $this->repository->paginate(20);
+	}
+
+	/**
+	 * [showEdit description]
+	 * @param  [type] $id [description]
+	 * @return [type]     [description]
+	 */
+	public function showEdit($id) {
+		$model = $this->repository->find($id);
+	}
+
+	/**
+	 * [processEdit description]
+	 * @param  [type] $id [description]
+	 * @return [type]     [description]
+	 */
+	public function processEdit($id) {
+		$model = $this->repository->find($id);
+		if( $errors = $this->repository->failsValidation( Input::all() ) ) {
+			Redirect::back()->withInput()->withErrors( $errors );
+		}
+		$this->repository->update( $model->id, Input::all() );
+		return Redirect::back();
+	}
+
+	/**
+	 * [showAdd description]
+	 * @return [type] [description]
+	 */
+	public function showAdd() {
+
+	}
+
+	/**
+	 * [processAdd description]
+	 * @return [type] [description]
+	 */
+	public function processAdd() {
+		if( $errors = $this->repository->failsValidation( Input::all() ) ) {
+			Redirect::back()->withInput()->withErrors( $errors );
+		}
+		$item = $this->repository->create( Input::all() );
+		return Redirect::back();
 	}
 
 }
