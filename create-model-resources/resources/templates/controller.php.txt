@@ -39,12 +39,12 @@ class {%CONTROLLER%} extends Controller {
 	 * @param  [type] $id [description]
 	 * @return [type]     [description]
 	 */
-	public function processEdit($id) {
+	public function processEdit( Request $request, $id) {
 		$model = $this->repository->find($id);
-		if( $errors = $this->repository->failsValidation( Request::all() ) ) {
+		if( $errors = $this->repository->failsValidation( $request->all() ) ) {
 			Redirect::back()->withInput()->withErrors( $errors );
 		}
-		$this->repository->update( $model->id, Request::all() );
+		$this->repository->update( $model->id, $request->all() );
 		$this->respository->success('Successfully update!');
 		return Redirect::back();
 	}
@@ -61,11 +61,11 @@ class {%CONTROLLER%} extends Controller {
 	 * [processAdd description]
 	 * @return [type] [description]
 	 */
-	public function processAdd() {
-		if( $errors = $this->repository->failsValidation( Request::all() ) ) {
+	public function processAdd( Request $request ) {
+		if( $errors = $this->repository->failsValidation( $request->all() ) ) {
 			Redirect::back()->withInput()->withErrors( $errors );
 		}
-		$item = $this->repository->create( Request::all() );
+		$item = $this->repository->create( $request->all() );
 		$this->respository->success('Successfully created!');
 		return Redirect::back();
 	}
