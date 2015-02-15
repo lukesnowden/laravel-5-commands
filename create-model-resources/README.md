@@ -43,7 +43,7 @@ will generate the following
 			list.blade.php
 ```
 
-foreach model created to will have to register the interface binding in the applications/packages service provider
+foreach model created to will have to register the interface binding in the applications/packages service provider (dump the autoload)
 
 ```php
 	public function register()
