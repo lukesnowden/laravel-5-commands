@@ -1,0 +1,25 @@
+<?php namespace {%NAMESPACE%}\Requests;
+
+use {%NAMESPACE%}\Requests\Request;
+
+class {%REQUEST%} extends Request {
+
+	/**
+	 * [authorize description]
+	 * @return {[type]} [description]
+	 */
+	public function authorize() {
+		return true;
+	}
+
+	/**
+	 * [rules description]
+	 * @return {[type]} [description]
+	 */
+	public function rules() {
+		return [
+			{%RULES%}
+		];
+	}
+
+}

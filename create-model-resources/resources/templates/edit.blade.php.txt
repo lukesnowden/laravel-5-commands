@@ -1,0 +1,11 @@
+
+{!! var_dump($errors) !!}
+
+{!! Form::model( $model, array( 'route' => array( '{%TABLENAME%}.edit.process', $model->id ) ) ) !!}
+
+	{%FIELDS%}
+
+	{!! Form::submit( 'Create' ) !!}
+
+
+{!! Form::close() !!}

@@ -1,0 +1,10 @@
+
+{!! var_dump($errors) !!}
+
+{!! Form::open( array( 'route' => '{%TABLENAME%}.add.process' ) ) !!}
+
+	{%FIELDS%}
+	{!! Form::submit( 'Create' ) !!}
+
+
+{!! Form::close() !!}

@@ -12,12 +12,6 @@ class {%REPOSITORY%} extends Repository implements {%INTERFACE%} {
 	protected $viewPath = '{%MODEL%}.';
 
 	/**
-	 * [$rules description]
-	 * @var array
-	 */
-	protected $rules = array({%RULES%});
-
-	/**
 	 * [__construct description]
 	 * @param [type] $model [description]
 	 */

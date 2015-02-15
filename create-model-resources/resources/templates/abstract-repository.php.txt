@@ -39,14 +39,7 @@ abstract class Repository
      * @return [type] [description]
      */
     public function create( $array ) {
-        $model = new $this->model;
-        foreach( $this->rules as $key => $value ) {
-            if( isset( $array[$key] ) ) {
-                $model->{$key} = $array[$key];
-            }
-        }
-        $model->save();
-        return $model;
+        return $this->model->create( $array );
     }
 
     /**
@@ -57,13 +50,7 @@ abstract class Repository
      */
     public function update( $id, $array ) {
         $model = $this->find( $id );
-        foreach( $this->rules as $key => $value ) {
-            if( isset( $array[$key] ) ) {
-                $model->{$key} = $array[$key];
-            }
-        }
-        $model->save();
-        return $model;
+        return $model->update( $array );
     }
 
     /**

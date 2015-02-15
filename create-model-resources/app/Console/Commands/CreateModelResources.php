@@ -72,23 +72,16 @@ class CreateModelResources extends Command {
 		$controllerName = "{$name}Controller";
 		$interfaceName = "{$name}Interface";
 		$repositoryName = "{$name}Repository";
+		$requestName = "{$name}Request";
 		$migrationName = "Create" . str_plural( $name ) . "Table";
 		$tableName = str_plural( strtolower( $name ) );
 		$modelName = $name;
 		$fields = array_filter( explode( ',', $options['fields'] ?: '' ) );
 
-		if( ! isset( $options['controller-path'] ) ) {
-			$controllersFolder = app_path('Http/Controllers/');
-			$tempTrait = new tempTrait();
-			$namespace = $tempTrait->appNamespace() . 'Http';
-			$viewsFolder = base_path('resources/views/');
-		} else if( ! isset( $options['namespace'] ) ) {
-			die( $this->error('You must declare a namespace if changing the path i.e. --namespace="My\New\Namespace"') );
-		} else {
-			$controllersFolder = base_path( rtrim( $options['controller-path'], '/' ) . '/' );
-			$namespace = $options['namespace'];
-			$viewsFolder = $controllersFolder . '../../../views/';
-		}
+		$controllersFolder = app_path('Http/Controllers/');
+		$tempTrait = new tempTrait();
+		$namespace = $tempTrait->appNamespace() . 'Http';
+		$viewsFolder = base_path('resources/views/');
 
 		// Create Folders
 		$controllersFolder = $this->createIfDoesntExist( $controllersFolder );
@@ -96,20 +89,62 @@ class CreateModelResources extends Command {
 		$repositoriesFolder = $this->createIfDoesntExist( $controllersFolder . '../Repositories/' );
 		$modelsFolder = $this->createIfDoesntExist( $controllersFolder . '../Models/' );
 		// Create Resources
-		$this->createController( $controllersFolder, $controllerName, $interfaceName, $namespace );
+		$this->createController( $controllersFolder, $controllerName, $interfaceName, $namespace, $requestName );
 		$this->createAbstractRepository( $repositoriesFolder, $namespace );
 		$this->createInterface( $interfacesFolder, $interfaceName, $namespace );
 		$this->createRepository( $repositoriesFolder, $repositoryName, $interfaceName, $modelName, $namespace, $fields );
 		$this->createModel( $modelsFolder, $modelName, $tableName, $namespace );
+		$this->createRequest( $controllersFolder, $requestName, $namespace, $fields );
 		$this->createMigration( $migrationName, $tableName, $fields );
-		$this->createViews( $name, $viewsFolder );
+		$this->createViews( $name, $viewsFolder, $tableName, $fields );
 		$this->displayRouteSuggesstions( $tableName, $controllerName, $namespace );
+		$this->displayBindingSuggestion( $interfaceName, $repositoryName, $namespace );
 
 		if ( $this->confirm( 'Do you want to create a new one with the same arguments? [yes|no]' ) ) {
 		    $name = $this->ask('What is the name? (i.e user)');
 		    $options['fields'] = $this->ask('Fields? (blank for no fields):');
 		    $this->build( $options, $name );
 		}
+	}
+
+	/**
+	 * [displayBindingSuggestion description]
+	 * @param  [type] $interfaceName  [description]
+	 * @param  [type] $repositoryName [description]
+	 * @return [type]                 [description]
+	 */
+	private function displayBindingSuggestion( $interfaceName, $repositoryName, $namespace ) {
+		$this->info("\nBinding suggestion for " . app_path('Providers/AppServiceProvider.php') );
+		$this->comment('$this->app->bind("' . "{$namespace}\Interfaces\\{$interfaceName}" . '", "' . "{$namespace}\Repositories\\{$repositoryName}" . '");' . "\n");
+	}
+
+	/**
+	 * [createRequest description]
+	 * @param  [type] $controllersFolder [description]
+	 * @param  [type] $namespace         [description]
+	 * @return [type]                    [description]
+	 */
+	private function createRequest( $folder, $name, $namespace, $fields ) {
+
+		$request = $this->createIfDoesntExist( $folder . "../Requests/{$name}.php", true );
+		$contents = file_get_contents( $this->templatesPath . 'request.php.txt' );
+
+		$rules = '';
+		foreach( $fields as $field ) {
+			if( $field == '' ) continue;
+			$rules .= "\n\t\t\t'{$field}' => 'required',";
+		}
+
+		$contents = str_replace( array(
+			'{%NAMESPACE%}',
+			'{%REQUEST%}',
+			'{%RULES%}'
+		), array(
+			$namespace,
+			$name,
+			rtrim( $rules ) . "\n"
+		), $contents );
+		file_put_contents( $request, $contents );
 	}
 
 	/**
@@ -121,7 +156,7 @@ class CreateModelResources extends Command {
 	 */
 	private function displayRouteSuggesstions( $tableName, $controllerName, $namespace ) {
 		$this->info("\nRoute suggestion:");
-		$this->comment("Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controllers'], function() {");
+		$this->comment("Route::group( ['prefix' => '{$tableName}'], function() {");
 		$this->comment("	Route::get( '/', 				['as' => '{$tableName}', 				'uses' => '{$controllerName}@lists' ]);");
 		$this->comment("	Route::get( '/add', 			['as' => '{$tableName}.add', 			'uses' => '{$controllerName}@showAdd' ]);");
 		$this->comment("	Route::get( '/edit/{ID}', 		['as' => '{$tableName}.edit', 			'uses' => '{$controllerName}@showEdit' ]);");
@@ -137,12 +172,25 @@ class CreateModelResources extends Command {
 	 * @param  [type] $folder [description]
 	 * @return [type]         [description]
 	 */
-	private function createViews( $name, $folder ) {
+	private function createViews( $name, $folder, $tableName, $fields ) {
 		$views = array('lists','add','edit');
 		$path = $this->createIfDoesntExist( $folder . $name . '/' );
 		foreach( $views as $view ) {
 			$this->createIfDoesntExist( "{$path}{$view}.blade.php", true );
 		}
+		$_fields = '';
+		foreach( $fields as $field ) {
+			$_fields .= "<div class=\"form-group\">\n\t\t";
+			$_fields .= "{!! Form::label( '{$field}', '{$field}' ) !!}\n\t\t";
+			$_fields .= "{!! Form::text( '{$field}', null, array( 'class' => 'form-control' ) ) !!}\n\t";
+			$_fields .= "</div>\n\n\t";
+		}
+		// Add
+		$template = str_replace( array('{%TABLENAME%}','{%FIELDS%}'), array( $tableName, rtrim( $_fields ) . "\n" ), file_get_contents( $this->templatesPath . 'add.blade.php.txt' ) );
+		file_put_contents( $path . "add.blade.php", $template );
+		// Edit
+		$template = str_replace( array('{%TABLENAME%}','{%FIELDS%}'), array( $tableName, rtrim( $_fields ) . "\n" ), file_get_contents( $this->templatesPath . 'edit.blade.php.txt' ) );
+		file_put_contents( $path . "edit.blade.php", $template );
 	}
 
 	/**
@@ -183,17 +231,19 @@ class CreateModelResources extends Command {
 	 * @param  [type] $namespace         [description]
 	 * @return [type]                    [description]
 	 */
-	private function createController( $folder, $controllerName, $interfaceName, $namespace ) {
+	private function createController( $folder, $controllerName, $interfaceName, $namespace, $request ) {
 		$controller = $this->createIfDoesntExist( $folder . "{$controllerName}.php", true );
 		$contents = file_get_contents( $this->templatesPath . 'controller.php.txt' );
 		$contents = str_replace( array(
 			'{%NAMESPACE%}',
 			'{%INTERFACE%}',
-			'{%CONTROLLER%}'
+			'{%CONTROLLER%}',
+			'{%REQUEST%}'
 		), array(
 			$namespace,
 			$interfaceName,
-			$controllerName
+			$controllerName,
+			$request
 		), $contents );
 		file_put_contents( $controller, $contents );
 	}
@@ -232,24 +282,16 @@ class CreateModelResources extends Command {
 		$repository = $this->createIfDoesntExist( $folder . "{$repositoryName}.php", true );
 		$contents = file_get_contents( $this->templatesPath . 'repository.php.txt' );
 
-		$rules = '';
-		foreach( $fields as $field ) {
-			if( $field == '' ) continue;
-			$rules .= "\n\t\t'{$field}' => 'required',";
-		}
-
 		$contents = str_replace( array(
 			'{%NAMESPACE%}',
 			'{%REPOSITORY%}',
 			'{%INTERFACE%}',
-			'{%MODEL%}',
-			'{%RULES%}'
+			'{%MODEL%}'
 		), array(
 			$namespace,
 			$repositoryName,
 			$interfaceName,
 			$modelName,
-			rtrim( $rules ) . "\n\t"
 		), $contents );
 		file_put_contents( $repository, $contents );
 	}
@@ -321,8 +363,6 @@ class CreateModelResources extends Command {
 	protected function getOptions()
 	{
 		return [
-			['controller-path', null, InputOption::VALUE_OPTIONAL, 'The path to your controllers folder', null],
-			['namespace', null, InputOption::VALUE_OPTIONAL, 'Namespace if Controller Path is defined', null],
 			['fields', null, InputOption::VALUE_OPTIONAL, 'Addes the fields to the migration (default string) and rules array', null]
 		];
 	}

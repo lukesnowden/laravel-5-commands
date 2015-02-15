@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Controller;
 use {%NAMESPACE%}\Interfaces\{%INTERFACE%};
-use Illuminate\Http\Request;
+use {%NAMESPACE%}\Requests\{%REQUEST%};
 use Session, Redirect;
 
 class {%CONTROLLER%} extends Controller {
@@ -39,11 +39,8 @@ class {%CONTROLLER%} extends Controller {
 	 * @param  [type] $id [description]
 	 * @return [type]     [description]
 	 */
-	public function processEdit( Request $request, $id) {
+	public function processEdit( {%REQUEST%} $request, $id) {
 		$model = $this->repository->find($id);
-		if( $errors = $this->repository->failsValidation( $request->all() ) ) {
-			Redirect::back()->withInput()->withErrors( $errors );
-		}
 		$this->repository->update( $model->id, $request->all() );
 		$this->repository->success('Successfully update!');
 		return Redirect::back();
@@ -61,10 +58,7 @@ class {%CONTROLLER%} extends Controller {
 	 * [processAdd description]
 	 * @return [type] [description]
 	 */
-	public function processAdd( Request $request ) {
-		if( $errors = $this->repository->failsValidation( $request->all() ) ) {
-			Redirect::back()->withInput()->withErrors( $errors );
-		}
+	public function processAdd( {%REQUEST%} $request ) {
 		$item = $this->repository->create( $request->all() );
 		$this->repository->success('Successfully created!');
 		return Redirect::back();
