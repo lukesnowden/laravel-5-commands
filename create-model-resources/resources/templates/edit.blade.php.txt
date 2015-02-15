@@ -5,7 +5,7 @@
 
 	{%FIELDS%}
 
-	{!! Form::submit( 'Create' ) !!}
+	{!! Form::submit( 'Update' ) !!}
 
 
 {!! Form::close() !!}

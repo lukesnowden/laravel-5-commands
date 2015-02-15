@@ -20,8 +20,8 @@ class {%CONTROLLER%} extends Controller {
 	 * @return [type] [description]
 	 */
 	public function lists() {
-		$list = $this->repository->paginate(20);
-		return $this->repository->view( 'lists', array( 'list' => $list ) );
+		$items = $this->repository->paginate(20);
+		return $this->repository->view( 'lists', array( 'items' => $items ) );
 	}
 
 	/**
