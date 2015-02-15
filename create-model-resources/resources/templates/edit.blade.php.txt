@@ -5,7 +5,7 @@
 
 	{%FIELDS%}
 
-	{!! Form::submit( 'Update' ) !!}
+	{!! Form::submit( 'Update', array( "class" => "btn btn-primary" )) !!}
 
 
 {!! Form::close() !!}
