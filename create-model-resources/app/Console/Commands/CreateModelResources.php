@@ -121,16 +121,14 @@ class CreateModelResources extends Command {
 	 */
 	private function displayRouteSuggesstions( $tableName, $controllerName, $namespace ) {
 		$this->info("\nRoute suggestion:");
-		$this->comment("
-Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controllers'], function() {
-	Route::get( '/', 			['as' => '{$tableName}', 			'uses' => '{$controllerName}@lists' ]);
-	Route::get( '/add', 			['as' => '{$tableName}.add', 		'uses' => '{$controllerName}@showAdd' ]);
-	Route::get( '/edit/{ID}', 		['as' => '{$tableName}.edit', 		'uses' => '{$controllerName}@showEdit' ]);
-	Route::get( '/delete/{ID}', 		['as' => '{$tableName}.delete', 		'uses' => '{$controllerName}@delete' ]);
-	Route::post('/edit/{ID}', 		['as' => '{$tableName}.edit.process', 	'uses' => '{$controllerName}@processEdit' ]);
-	Route::post('/add', 			['as' => '{$tableName}.add.process', 	'uses' => '{$controllerName}@processAdd' ]);
-});\n
-");
+		$this->comment("Route::group( ['prefix' => '{$tableName}', 'namespace' => '{$namespace}\Controllers'], function() {");
+		$this->comment("	Route::get( '/', 				['as' => '{$tableName}', 				'uses' => '{$controllerName}@lists' ]);");
+		$this->comment("	Route::get( '/add', 			['as' => '{$tableName}.add', 			'uses' => '{$controllerName}@showAdd' ]);");
+		$this->comment("	Route::get( '/edit/{ID}', 		['as' => '{$tableName}.edit', 			'uses' => '{$controllerName}@showEdit' ]);");
+		$this->comment("	Route::get( '/delete/{ID}', 	['as' => '{$tableName}.delete', 		'uses' => '{$controllerName}@delete' ]);");
+		$this->comment("	Route::post('/edit/{ID}', 		['as' => '{$tableName}.edit.process', 	'uses' => '{$controllerName}@processEdit' ]);");
+		$this->comment("	Route::post('/add', 			['as' => '{$tableName}.add.process', 	'uses' => '{$controllerName}@processAdd' ]);");
+		$this->comment("});\n");
 	}
 
 	/**
