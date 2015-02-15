@@ -30,6 +30,8 @@ will generate the following
 			Repository.php
 		-Models
 			Post.php
+		-Requests
+			PostRequest.php
 -database
 	-migrations
 		0000_00_00_000000_create_posts_table.php
