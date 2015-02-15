@@ -191,6 +191,9 @@ class CreateModelResources extends Command {
 		// Edit
 		$template = str_replace( array('{%TABLENAME%}','{%FIELDS%}'), array( $tableName, rtrim( $_fields ) . "\n" ), file_get_contents( $this->templatesPath . 'edit.blade.php.txt' ) );
 		file_put_contents( $path . "edit.blade.php", $template );
+		// List
+		$template = str_replace( array('{%TABLENAME%}'), array( $tableName ), file_get_contents( $this->templatesPath . 'lists.blade.php.txt' ) );
+		file_put_contents( $path . "lists.blade.php", $template );
 	}
 
 	/**
