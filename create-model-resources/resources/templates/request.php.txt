@@ -1,6 +1,7 @@
 <?php namespace {%NAMESPACE%}\Requests;
 
 use {%NAMESPACE%}\Requests\Request;
+use Illuminate\Auth\Guard;
 
 class {%REQUEST%} extends Request {
 
@@ -8,7 +9,7 @@ class {%REQUEST%} extends Request {
 	 * [authorize description]
 	 * @return {[type]} [description]
 	 */
-	public function authorize() {
+	public function authorize( Guard $auth) {
 		return true;
 	}
 
