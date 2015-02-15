@@ -1,7 +1,7 @@
 
 #Create Model Resources
 
-Create a model along with migration, controller, interface, repository and views.
+Create a model along with migration, controller, interface, repository, request and views.
 
 Add the reference to the commands kernel.
 /app/Console/Kernel.php
