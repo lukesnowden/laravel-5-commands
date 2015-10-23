@@ -15,5 +15,12 @@ class {%MODEL%} extends Eloquent {
 	 * @var array
 	 */
 	protected $guarded = array( 'id' );
+	
+	 /**
+	   * The attributes that are mass assignable.
+	   *
+	   * @var array
+	   */
+	 protected $fillable = [];
 
 }
